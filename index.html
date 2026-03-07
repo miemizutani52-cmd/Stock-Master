@@ -265,6 +265,20 @@
   .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; display: inline-block; margin-right: 5px; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
   input[type=date] { color-scheme: light; }
+
+  /* Edit modal */
+  .edit-cat-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .edit-cat-chip { padding: 8px 13px; border-radius: 20px; border: 2px solid var(--border); background: #fff; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .qty-input {
+    width: 70px; padding: 8px 10px;
+    border-radius: 12px; border: 1.5px solid var(--border);
+    font-size: 22px; font-weight: 900; text-align: center;
+    outline: none; font-family: inherit; color: var(--text);
+  }
+  .qty-input:focus { border-color: var(--blue); }
+  .item-body-clickable { cursor: pointer; }
+  .item-body-clickable:active { opacity: 0.75; }
+  .edit-hint { font-size: 10px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 3px; }
 </style>
 </head>
 <body>
@@ -346,7 +360,7 @@
       <label class="form-label">数量</label>
       <div class="qty-row">
         <button class="qty-btn" onclick="changeQty(-1)">−</button>
-        <div class="qty-val" id="new-qty">1</div>
+        <input class="qty-input" type="number" id="new-qty" min="1" value="1" oninput="onNewQtyInput()">
         <button class="qty-btn" onclick="changeQty(1)" style="background:var(--navy);color:#fff;border-color:var(--navy)">＋</button>
       </div>
     </div>
@@ -369,6 +383,44 @@
 
 <!-- History Modal -->
 <div class="modal-overlay" id="history-modal" onclick="handleOverlayClick(event,'history-modal')">
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="edit-modal" onclick="handleOverlayClick(event,'edit-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">✏️ 商品を編集</span>
+      <button class="modal-close" onclick="closeEdit()">閉じる</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">商品名</label>
+      <input class="form-input" id="edit-name" placeholder="商品名">
+    </div>
+    <div class="form-group">
+      <label class="form-label">カテゴリ</label>
+      <div class="edit-cat-chips" id="edit-cat-chips"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">数量</label>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="changeEditQty(-1)">−</button>
+        <input class="qty-input" type="number" id="edit-qty" min="0" oninput="onEditQtyInput()">
+        <button class="qty-btn" onclick="changeEditQty(1)" style="background:var(--navy);color:#fff;border-color:var(--navy)">＋</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">賞味期限</label>
+      <input type="date" class="form-input" id="edit-expiry">
+      <div class="quick-dates">
+        <button class="quick-date-btn" onclick="setEditExpiry(90)">3ヶ月</button>
+        <button class="quick-date-btn" onclick="setEditExpiry(180)">6ヶ月</button>
+        <button class="quick-date-btn" onclick="setEditExpiry(365)">1年</button>
+        <button class="quick-date-btn" onclick="setEditExpiry(365*3)">3年</button>
+        <button class="quick-date-btn" onclick="setEditExpiry(365*5)">5年</button>
+      </div>
+    </div>
+    <button class="submit-btn" onclick="saveEdit()">💾 保存する</button>
+  </div>
+</div>
   <div class="modal" style="max-height:85vh;display:flex;flex-direction:column;padding:0">
     <div style="padding:20px 20px 12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center">
       <span class="modal-title">📋 操作履歴</span>
@@ -380,6 +432,8 @@
   </div>
 </div>
 
+<!-- ZXing barcode reader -->
+<script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -469,8 +523,14 @@ window.selectCat = (cat) => {
 };
 
 window.changeQty = (d) => {
-  newQty = Math.max(1, newQty+d);
-  document.getElementById("new-qty").textContent = newQty;
+  const el = document.getElementById("new-qty");
+  newQty = Math.max(1, (parseInt(el.value)||1) + d);
+  el.value = newQty;
+};
+
+window.onNewQtyInput = () => {
+  const v = parseInt(document.getElementById("new-qty").value);
+  newQty = isNaN(v) || v < 1 ? 1 : v;
 };
 
 window.setExpiry = (days) => {
@@ -523,13 +583,14 @@ function renderList() {
     return `
     <div class="item-card" style="border:1px solid ${st.light}">
       <div class="status-bar" style="background:${st.bg}"></div>
-      <div class="item-body">
+      <div class="item-body item-body-clickable" onclick="openEdit('${item.id}')">
         <div class="item-badges">
           <span class="badge" style="background:${cc}20;color:${cc}">${CAT_ICONS[item.category]} ${item.category}</span>
           <span class="badge" style="background:${st.bg};color:${st.text}">${st.icon} ${st.label}</span>
         </div>
         <div class="item-name">${item.name}</div>
         <div class="item-expiry">賞味期限: ${item.expiry}</div>
+        <div class="edit-hint">✏️ タップして編集</div>
       </div>
       <div class="item-right">
         <button class="consume-btn" onclick="consume('${item.id}')"
@@ -601,9 +662,10 @@ window.deleteItem = async (id) => {
 window.addItem = async () => {
   const name = document.getElementById("new-name").value.trim();
   const expiry = document.getElementById("new-expiry").value;
+  const qtyVal = parseInt(document.getElementById("new-qty").value) || 1;
   if(!name||!expiry) return;
   await addDoc(collection(db,"items"),{
-    name, category: newCat, quantity: newQty, expiry,
+    name, category: newCat, quantity: qtyVal, expiry,
     createdAt: serverTimestamp()
   });
   await addDoc(collection(db,"history"),{
@@ -635,43 +697,91 @@ window.undoEntry = async (hid, action, itemName, detail) => {
   showToast("操作を元に戻しました");
 };
 
-// Barcode scan
+// Barcode scan (real - using ZXing-js/browser)
+let codeReader = null;
+let scanActive = false;
+
 window.startScan = async () => {
   document.getElementById("scan-area").style.display = "block";
   document.getElementById("scan-feedback").textContent = "カメラ起動中...";
+  scanActive = true;
+
   try {
+    if(!window.ZXing) throw new Error("ZXing not loaded");
+    codeReader = new window.ZXing.BrowserMultiFormatReader();
+    document.getElementById("scan-feedback").textContent = "📦 バーコードをカメラに向けてください";
+
+    const videoEl = document.getElementById("scan-video");
     const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
     scanStream = stream;
-    const video = document.getElementById("scan-video");
-    video.srcObject = stream;
-    video.play();
-    document.getElementById("scan-feedback").textContent = "バーコードをカメラに向けてください";
-    setTimeout(() => simulateScan(), 3000);
+    videoEl.srcObject = stream;
+    await videoEl.play();
+
+    // Poll frames
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    async function tick() {
+      if(!scanActive) return;
+      if(videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
+        canvas.width = videoEl.videoWidth;
+        canvas.height = videoEl.videoHeight;
+        ctx.drawImage(videoEl, 0, 0);
+        try {
+          const result = await codeReader.decodeFromCanvas(canvas);
+          if(result && result.getText()) {
+            scanActive = false;
+            stopScan();
+            onBarcodeDetected(result.getText());
+            return;
+          }
+        } catch(e) {}
+      }
+      if(scanActive) setTimeout(tick, 200);
+    }
+    tick();
+
   } catch(e) {
-    document.getElementById("scan-feedback").textContent = "📷 カメラ不可 — デモデータを入力します";
-    setTimeout(() => simulateScan(), 1500);
+    document.getElementById("scan-feedback").textContent = "⚠️ カメラへのアクセスを許可してください";
+    scanActive = false;
   }
 };
 
-function simulateScan() {
-  stopScan();
-  const products = [
-    {name:"アルファ米（白米）",category:"主食",expiry:getDateStr(365*5)},
-    {name:"缶詰（さば味噌）",category:"おかず",expiry:getDateStr(365*3)},
-    {name:"ミネラルウォーター 2L",category:"水",expiry:getDateStr(365*2)},
-    {name:"レトルトカレー",category:"おかず",expiry:getDateStr(365*3)},
-    {name:"乾パン",category:"主食",expiry:getDateStr(365*5)},
-  ];
-  const p = products[Math.floor(Math.random()*products.length)];
-  document.getElementById("new-name").value = p.name;
-  document.getElementById("new-expiry").value = p.expiry;
-  selectCat(p.category);
-  document.getElementById("recents-section").style.display = "none";
-  document.getElementById("scan-feedback").textContent = `✅ 読み取り成功: ${p.name}`;
+async function onBarcodeDetected(code) {
   document.getElementById("scan-area").style.display = "block";
+  document.getElementById("scan-feedback").textContent = `🔍 JANコード: ${code} — 商品情報を検索中...`;
+
+  try {
+    const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
+    const data = await res.json();
+    if(data.status === 1 && data.product) {
+      const p = data.product;
+      const name = p.product_name_ja || p.product_name || p.abbreviated_product_name || "";
+      if(name) {
+        document.getElementById("new-name").value = name;
+        document.getElementById("recents-section").style.display = "none";
+        // カテゴリ推定
+        const cats = (p.categories||"").toLowerCase();
+        let guessedCat = "その他";
+        if(cats.includes("water")||cats.includes("飲料")||cats.includes("水")) guessedCat="水";
+        else if(cats.includes("rice")||cats.includes("pasta")||cats.includes("noodle")||cats.includes("bread")||cats.includes("穀物")||cats.includes("米")||cats.includes("麺")||cats.includes("パン")) guessedCat="主食";
+        else if(cats.includes("snack")||cats.includes("biscuit")||cats.includes("cookie")||cats.includes("菓子")||cats.includes("スナック")||cats.includes("チョコ")) guessedCat="お菓子";
+        else if(cats.includes("fish")||cats.includes("meat")||cats.includes("vegetable")||cats.includes("缶詰")||cats.includes("レトルト")||cats.includes("惣菜")) guessedCat="おかず";
+        selectCat(guessedCat);
+        document.getElementById("scan-feedback").textContent = `✅ 取得成功: ${name}`;
+        return;
+      }
+    }
+  } catch(e) {}
+
+  // 商品名が見つからなかった場合
+  document.getElementById("scan-feedback").textContent = `📋 JANコード: ${code}（商品名が見つかりませんでした。手入力してください）`;
+  document.getElementById("recents-section").style.display = "none";
 }
 
 function stopScan() {
+  scanActive = false;
+  if(codeReader) { try { codeReader.reset(); } catch(e){} codeReader = null; }
   if(scanStream) { scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; }
 }
 
@@ -692,7 +802,7 @@ window.onNameInput = () => {
 window.openAdd = () => {
   newQty=1; newCat="主食";
   document.getElementById("new-name").value="";
-  document.getElementById("new-qty").textContent="1";
+  document.getElementById("new-qty").value="1";
   document.getElementById("new-expiry").value=getDateStr(365);
   document.getElementById("scan-area").style.display="none";
   document.getElementById("suggestions").style.display="none";
@@ -710,7 +820,7 @@ window.openHistory = () => {
   document.getElementById("history-modal").classList.add("open");
 };
 window.closeHistory = () => document.getElementById("history-modal").classList.remove("open");
-window.handleOverlayClick = (e,id) => { if(e.target===e.currentTarget) { if(id==="add-modal") closeAdd(); else closeHistory(); } };
+window.handleOverlayClick = (e,id) => { if(e.target===e.currentTarget) { if(id==="add-modal") closeAdd(); else if(id==="edit-modal") closeEdit(); else closeHistory(); } };
 
 // Toast
 function showToast(msg, type="success") {
@@ -721,6 +831,68 @@ function showToast(msg, type="success") {
   setTimeout(()=>el.classList.remove("show"), 2500);
 }
 window.showToast = showToast;
+
+// Edit modal
+let editId = null;
+let editCat = "主食";
+let editQty = 1;
+
+window.openEdit = (id) => {
+  const item = items.find(i=>i.id===id);
+  if(!item) return;
+  editId = id; editCat = item.category; editQty = item.quantity;
+  document.getElementById("edit-name").value = item.name;
+  document.getElementById("edit-qty").value = item.quantity;
+  document.getElementById("edit-expiry").value = item.expiry;
+  const chips = document.getElementById("edit-cat-chips");
+  chips.innerHTML = CATEGORIES.map(c =>
+    `<button class="edit-cat-chip" id="echip-${c}" onclick="selectEditCat('${c}')" style="${editCat===c?`border-color:${CAT_COLORS[c]};background:${CAT_COLORS[c]}22;color:${CAT_COLORS[c]};font-weight:700`:''}">${CAT_ICONS[c]} ${c}</button>`
+  ).join('');
+  document.getElementById("edit-modal").classList.add("open");
+};
+
+window.closeEdit = () => document.getElementById("edit-modal").classList.remove("open");
+
+window.selectEditCat = (cat) => {
+  editCat = cat;
+  document.querySelectorAll(".edit-cat-chip").forEach(b => {
+    const c = b.id.replace("echip-","");
+    b.style.cssText = editCat===c ? `border-color:${CAT_COLORS[c]};background:${CAT_COLORS[c]}22;color:${CAT_COLORS[c]};font-weight:700` : "";
+  });
+};
+
+window.changeEditQty = (d) => {
+  const el = document.getElementById("edit-qty");
+  editQty = Math.max(0, (parseInt(el.value)||0) + d);
+  el.value = editQty;
+};
+
+window.onEditQtyInput = () => {
+  const v = parseInt(document.getElementById("edit-qty").value);
+  editQty = isNaN(v) || v < 0 ? 0 : v;
+};
+
+window.setEditExpiry = (days) => {
+  document.getElementById("edit-expiry").value = getDateStr(days);
+};
+
+window.saveEdit = async () => {
+  if(!editId) return;
+  const name = document.getElementById("edit-name").value.trim();
+  const expiry = document.getElementById("edit-expiry").value;
+  const qty = parseInt(document.getElementById("edit-qty").value);
+  if(!name||!expiry) return;
+  const item = items.find(i=>i.id===editId);
+  await updateDoc(doc(db,"items",editId),{name, category: editCat, quantity: qty, expiry});
+  await addDoc(collection(db,"history"),{
+    action:"編集", itemName:name,
+    detail:`数量:${item?.quantity}→${qty} 期限:${item?.expiry}→${expiry}`,
+    time: new Date().toLocaleString("ja-JP"),
+    createdAt: serverTimestamp()
+  });
+  showToast(`${name} を更新しました`);
+  closeEdit();
+};
 
 // Init
 initUI();
