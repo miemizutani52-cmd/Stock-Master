@@ -7,389 +7,186 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy: #1a3c5e;
-    --blue: #2d6a9f;
-    --bg: #f0f4f8;
-    --white: #ffffff;
-    --red: #ff3b3b;
-    --yellow: #ffb800;
-    --green: #22c55e;
-    --red-light: #ffe5e5;
-    --yellow-light: #fff8e0;
-    --green-light: #e6faf0;
-    --border: #e0e8ef;
-    --text: #1a2e45;
-    --muted: #8a9bb0;
+    --navy: #1a3c5e; --blue: #2d6a9f; --bg: #f0f4f8; --white: #fff;
+    --red: #ff3b3b; --yellow: #ffb800; --green: #22c55e;
+    --border: #e0e8ef; --text: #1a2e45; --muted: #8a9bb0;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); min-height: 100vh; max-width: 480px; margin: 0 auto; }
 
-  /* Header */
-  .header {
-    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
-    color: #fff;
-    padding: 20px 20px 56px;
-    position: relative;
-    overflow: hidden;
-  }
-  .header::before {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 180px; height: 180px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-  }
-  .header::after {
-    content: '';
-    position: absolute;
-    bottom: -30px; left: -20px;
-    width: 120px; height: 120px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.04);
-  }
-  .header-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
-  .header-label { font-size: 10px; opacity: 0.65; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px; }
-  .header-title { font-size: 20px; font-weight: 900; letter-spacing: -0.02em; }
-  .header-btn { background: rgba(255,255,255,0.15); border: none; color: #fff; border-radius: 12px; padding: 8px 14px; font-size: 12px; cursor: pointer; backdrop-filter: blur(10px); font-family: inherit; }
+  .header { background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); color: #fff; padding: 20px 20px 56px; position: relative; overflow: hidden; }
+  .header::before { content:''; position:absolute; top:-40px; right:-40px; width:180px; height:180px; border-radius:50%; background:rgba(255,255,255,0.06); }
+  .header::after  { content:''; position:absolute; bottom:-30px; left:-20px; width:120px; height:120px; border-radius:50%; background:rgba(255,255,255,0.04); }
+  .header-top { display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1; }
+  .header-label { font-size:10px; opacity:0.65; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:4px; }
+  .header-title { font-size:20px; font-weight:900; letter-spacing:-0.02em; }
+  .header-btn { background:rgba(255,255,255,0.15); border:none; color:#fff; border-radius:12px; padding:8px 14px; font-size:12px; cursor:pointer; backdrop-filter:blur(10px); font-family:inherit; }
+  .stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:16px; position:relative; z-index:1; }
+  .stat-card { background:rgba(255,255,255,0.12); border-radius:14px; padding:10px 12px; text-align:center; backdrop-filter:blur(10px); }
+  .stat-icon { font-size:18px; margin-bottom:2px; }
+  .stat-value { font-size:22px; font-weight:900; line-height:1; }
+  .stat-label { font-size:10px; opacity:0.7; margin-top:2px; }
 
-  .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; position: relative; z-index: 1; }
-  .stat-card { background: rgba(255,255,255,0.12); border-radius: 14px; padding: 10px 12px; text-align: center; backdrop-filter: blur(10px); }
-  .stat-icon { font-size: 18px; margin-bottom: 2px; }
-  .stat-value { font-size: 22px; font-weight: 900; line-height: 1; }
-  .stat-label { font-size: 10px; opacity: 0.7; margin-top: 2px; }
+  .sticky-nav { background:var(--white); padding:0 12px; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:50; margin-top:-20px; border-radius:20px 20px 0 0; }
+  .cat-tabs { display:flex; gap:4px; overflow-x:auto; padding:12px 0 10px; scrollbar-width:none; }
+  .cat-tabs::-webkit-scrollbar { display:none; }
+  .cat-btn { flex-shrink:0; padding:7px 13px; border-radius:20px; border:none; background:var(--bg); color:#555; font-size:12px; font-weight:500; cursor:pointer; transition:all 0.2s; font-family:inherit; }
+  .cat-btn.active { background:var(--navy); color:#fff; font-weight:700; }
+  .search-wrap { position:relative; margin-bottom:10px; }
+  .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:0.35; font-size:13px; }
+  .search-input { width:100%; padding:9px 12px 9px 32px; border-radius:10px; border:1.5px solid var(--border); font-size:13px; outline:none; background:#f8fafb; font-family:inherit; }
 
-  /* Sticky nav */
-  .sticky-nav {
-    background: var(--white);
-    padding: 0 12px;
-    border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 50;
-    margin-top: -20px;
-    border-radius: 20px 20px 0 0;
-  }
-  .cat-tabs { display: flex; gap: 4px; overflow-x: auto; padding: 12px 0 10px; scrollbar-width: none; }
-  .cat-tabs::-webkit-scrollbar { display: none; }
-  .cat-btn {
-    flex-shrink: 0;
-    padding: 7px 13px;
-    border-radius: 20px; border: none;
-    background: var(--bg); color: #555;
-    font-size: 12px; font-weight: 500;
-    cursor: pointer; transition: all 0.2s;
-    font-family: inherit;
-  }
-  .cat-btn.active { background: var(--navy); color: #fff; font-weight: 700; }
-  .search-wrap { position: relative; margin-bottom: 10px; }
-  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.35; font-size: 13px; }
-  .search-input {
-    width: 100%; padding: 9px 12px 9px 32px;
-    border-radius: 10px; border: 1.5px solid var(--border);
-    font-size: 13px; outline: none; background: #f8fafb;
-    font-family: inherit;
-  }
+  .list { padding:10px 12px 110px; }
+  .empty { text-align:center; padding:60px 20px; color:#bbb; }
+  .empty-icon { font-size:48px; margin-bottom:12px; }
 
-  /* List */
-  .list { padding: 10px 12px 110px; }
-  .empty { text-align: center; padding: 60px 20px; color: #bbb; }
-  .empty-icon { font-size: 48px; margin-bottom: 12px; }
-  .empty-text { font-size: 14px; }
+  .item-card { background:var(--white); border-radius:18px; margin-bottom:10px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06); display:flex; align-items:stretch; }
+  .status-bar { width:6px; flex-shrink:0; }
+  .item-body { flex:1; padding:13px 12px; cursor:pointer; user-select:none; -webkit-user-select:none; }
+  .item-body:active { background:#f8fafc; }
+  .item-badges { display:flex; align-items:center; gap:6px; margin-bottom:5px; flex-wrap:wrap; }
+  .badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; }
+  .item-name { font-size:15px; font-weight:700; color:var(--text); line-height:1.3; }
+  .item-expiry { font-size:11px; color:var(--muted); margin-top:3px; }
+  .edit-hint { font-size:10px; color:#b0bec5; margin-top:4px; }
+  .item-right { display:flex; flex-direction:column; align-items:center; gap:5px; padding:13px 0; margin-left:6px; }
+  .consume-btn { width:56px; height:56px; border-radius:16px; border:none; font-size:13px; font-weight:900; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; transition:transform 0.1s; font-family:inherit; }
+  .consume-btn:active { transform:scale(0.9); }
+  .qty-num { font-size:24px; font-weight:900; line-height:1; }
+  .qty-unit { font-size:9px; color:var(--muted); }
+  .delete-btn { background:none; border:none; color:#ddd; font-size:16px; cursor:pointer; padding:0 12px; transition:color 0.2s; align-self:center; }
+  .delete-btn:hover { color:var(--red); }
 
-  /* Item card */
-  .item-card {
-    background: var(--white);
-    border-radius: 18px;
-    margin-bottom: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    display: flex;
-    align-items: stretch;
-    transition: transform 0.15s;
-  }
-  .item-card:active { transform: scale(0.98); }
-  .status-bar { width: 6px; flex-shrink: 0; }
-  .item-body { flex: 1; padding: 13px 12px; }
-  .item-badges { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; flex-wrap: wrap; }
-  .badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
-  .item-name { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
-  .item-expiry { font-size: 11px; color: var(--muted); margin-top: 3px; }
-  .item-right { display: flex; flex-direction: column; align-items: center; gap: 5px; margin-left: 10px; }
-  .consume-btn {
-    width: 56px; height: 56px;
-    border-radius: 16px; border: none;
-    font-size: 13px; font-weight: 900;
-    cursor: pointer;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    line-height: 1; transition: transform 0.1s;
-    font-family: inherit;
-  }
-  .consume-btn:active { transform: scale(0.9); }
-  .consume-btn span.minus { font-size: 20px; }
-  .consume-btn span.label { font-size: 9px; opacity: 0.85; }
-  .qty-display { text-align: center; }
-  .qty-num { font-size: 24px; font-weight: 900; color: var(--text); line-height: 1; }
-  .qty-unit { font-size: 9px; color: var(--muted); }
-  .delete-btn { background: none; border: none; color: #ddd; font-size: 16px; cursor: pointer; padding: 0 12px; transition: color 0.2s; align-self: center; }
-  .delete-btn:hover { color: var(--red); }
+  .fab { position:fixed; bottom:24px; right:20px; width:64px; height:64px; border-radius:50%; border:none; background:linear-gradient(135deg,var(--navy),var(--blue)); color:#fff; font-size:28px; cursor:pointer; box-shadow:0 6px 24px rgba(26,60,94,0.45); display:flex; align-items:center; justify-content:center; z-index:99; transition:transform 0.2s; font-family:inherit; }
+  .fab:hover { transform:scale(1.08); }
+  @media(min-width:480px){ .fab{ right:calc(50% - 220px); } }
 
-  /* FAB */
-  .fab {
-    position: fixed; bottom: 24px; right: 50%;
-    transform: translateX(calc(50% + 200px));
-    width: 64px; height: 64px;
-    border-radius: 50%; border: none;
-    background: linear-gradient(135deg, var(--navy), var(--blue));
-    color: #fff; font-size: 28px;
-    cursor: pointer;
-    box-shadow: 0 6px 24px rgba(26,60,94,0.45);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 99; transition: transform 0.2s;
-    font-family: inherit;
-  }
-  .fab:hover { transform: translateX(calc(50% + 200px)) scale(1.08); }
-  @media (max-width: 480px) {
-    .fab { right: 20px; transform: none; }
-    .fab:hover { transform: scale(1.08); }
-  }
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:150; display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal { background:var(--white); border-radius:24px 24px 0 0; width:100%; max-height:92vh; overflow-y:auto; padding:24px 20px 40px; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .modal-overlay.open .modal { transform:translateY(0); }
+  .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .modal-title { font-size:18px; font-weight:900; color:var(--text); }
+  .modal-close { background:var(--bg); border:none; border-radius:10px; padding:6px 12px; cursor:pointer; font-size:13px; color:#666; font-family:inherit; }
 
-  /* Modal */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 150; display: flex;
-    align-items: flex-end;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.25s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    background: var(--white);
-    border-radius: 24px 24px 0 0;
-    width: 100%; max-height: 92vh;
-    overflow-y: auto;
-    padding: 24px 20px 40px;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .modal-title { font-size: 18px; font-weight: 900; color: var(--text); }
-  .modal-close { background: var(--bg); border: none; border-radius: 10px; padding: 6px 12px; cursor: pointer; font-size: 13px; color: #666; font-family: inherit; }
+  .form-label { display:block; font-size:12px; font-weight:700; color:#555; margin-bottom:7px; letter-spacing:0.03em; }
+  .form-input { width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--border); font-size:14px; outline:none; font-family:inherit; transition:border-color 0.2s; }
+  .form-input:focus { border-color:var(--blue); }
+  .form-group { margin-bottom:16px; }
 
-  /* Form */
-  .form-label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 7px; letter-spacing: 0.03em; }
-  .form-input {
-    width: 100%; padding: 12px 14px;
-    border-radius: 12px; border: 1.5px solid var(--border);
-    font-size: 14px; outline: none; font-family: inherit;
-    transition: border-color 0.2s;
-  }
-  .form-input:focus { border-color: var(--blue); }
-  .form-group { margin-bottom: 16px; }
+  .cat-chips, .edit-cat-chips { display:flex; gap:6px; flex-wrap:wrap; }
+  .cat-chip, .edit-cat-chip { padding:8px 13px; border-radius:20px; border:2px solid var(--border); background:#fff; font-size:12px; cursor:pointer; font-family:inherit; transition:all 0.15s; }
 
-  .scan-btn {
-    width: 100%; padding: 14px;
-    border-radius: 14px; border: 2.5px dashed var(--blue);
-    background: #f0f8ff; color: var(--blue);
-    font-size: 14px; font-weight: 700;
-    cursor: pointer; display: flex;
-    align-items: center; justify-content: center; gap: 8px;
-    margin-bottom: 16px; font-family: inherit;
-  }
-  .scan-area { margin-bottom: 16px; border-radius: 14px; overflow: hidden; background: #000; position: relative; }
-  .scan-area video { width: 100%; height: 180px; object-fit: cover; display: block; }
-  .scan-frame { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-  .scan-frame-inner { border: 2px solid #fff; width: 70%; height: 60px; border-radius: 8px; opacity: 0.6; }
-  .scan-feedback { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: #fff; padding: 8px 12px; font-size: 12px; text-align: center; }
+  .qty-row { display:flex; align-items:center; gap:14px; }
+  .qty-btn { width:44px; height:44px; border-radius:12px; border:2px solid var(--border); background:#f8fafc; color:#555; font-size:20px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; font-family:inherit; }
+  .qty-input { width:70px; padding:8px 10px; border-radius:12px; border:1.5px solid var(--border); font-size:22px; font-weight:900; text-align:center; outline:none; font-family:inherit; color:var(--text); }
+  .qty-input:focus { border-color:var(--blue); }
 
-  .divider { border-top: 1px solid #eee; padding-top: 14px; margin-bottom: 12px; }
-  .divider-label { font-size: 11px; color: #aaa; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 10px; }
+  .quick-dates { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .quick-date-btn { background:var(--bg); border:none; border-radius:10px; padding:5px 10px; font-size:11px; cursor:pointer; color:#555; font-family:inherit; }
 
-  .cat-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .cat-chip { padding: 8px 13px; border-radius: 20px; border: 2px solid var(--border); background: #fff; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .suggestions-box { border:1.5px solid var(--border); border-radius:10px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.1); background:#fff; margin-top:2px; }
+  .suggestion-item { padding:10px 14px; font-size:13px; cursor:pointer; border-bottom:1px solid #f5f5f5; }
+  .suggestion-item:hover { background:#f0f8ff; }
 
-  .qty-row { display: flex; align-items: center; gap: 14px; }
-  .qty-btn { width: 44px; height: 44px; border-radius: 12px; border: 2px solid var(--border); background: #f8fafc; color: #555; font-size: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; }
-  .qty-val { font-size: 28px; font-weight: 900; color: var(--text); min-width: 44px; text-align: center; }
+  .recents { margin-bottom:16px; }
+  .recents-label { font-size:11px; color:#aaa; font-weight:700; margin-bottom:8px; }
+  .recent-chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .recent-chip { background:var(--bg); border:none; border-radius:20px; padding:6px 12px; font-size:12px; cursor:pointer; color:#444; font-family:inherit; }
 
-  .quick-dates { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-  .quick-date-btn { background: var(--bg); border: none; border-radius: 10px; padding: 5px 10px; font-size: 11px; cursor: pointer; color: #555; font-family: inherit; }
+  .submit-btn { width:100%; padding:16px; border-radius:16px; border:none; background:linear-gradient(135deg,var(--navy),var(--blue)); color:#fff; font-size:16px; font-weight:800; cursor:pointer; font-family:inherit; box-shadow:0 4px 16px rgba(26,60,94,0.35); }
 
-  .suggestions { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.1); background: #fff; margin-top: 2px; }
-  .suggestion-item { padding: 10px 14px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f5f5f5; }
-  .suggestion-item:hover { background: #f0f8ff; }
+  .history-list { padding:10px 16px 32px; }
+  .history-item { display:flex; justify-content:space-between; align-items:center; padding:12px; background:#f8fafc; border-radius:12px; margin-bottom:8px; }
+  .history-action-badge { font-size:11px; font-weight:700; padding:1px 8px; border-radius:10px; }
+  .history-name { font-size:13px; font-weight:600; color:var(--text); }
+  .history-meta { font-size:11px; color:#aaa; margin-top:2px; }
+  .undo-btn { background:#fff3e0; border:none; border-radius:10px; padding:6px 11px; font-size:11px; color:#e67e22; font-weight:700; cursor:pointer; flex-shrink:0; margin-left:8px; font-family:inherit; }
 
-  .recents { margin-bottom: 16px; }
-  .recents-label { font-size: 11px; color: #aaa; font-weight: 700; margin-bottom: 8px; }
-  .recent-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .recent-chip { background: var(--bg); border: none; border-radius: 20px; padding: 6px 12px; font-size: 12px; cursor: pointer; color: #444; font-family: inherit; }
+  .toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(10px); color:#fff; padding:12px 22px; border-radius:30px; font-size:13px; font-weight:600; box-shadow:0 4px 20px rgba(0,0,0,0.2); z-index:200; white-space:nowrap; opacity:0; transition:all 0.3s; pointer-events:none; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-  .submit-btn {
-    width: 100%; padding: 16px;
-    border-radius: 16px; border: none;
-    background: linear-gradient(135deg, var(--navy), var(--blue));
-    color: #fff; font-size: 16px; font-weight: 800;
-    cursor: pointer; font-family: inherit;
-    box-shadow: 0 4px 16px rgba(26,60,94,0.35);
-    transition: opacity 0.2s;
-  }
-  .submit-btn:disabled { background: #e0e0e0; box-shadow: none; cursor: not-allowed; }
-
-  /* History */
-  .history-list { padding: 10px 16px 32px; }
-  .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8fafc; border-radius: 12px; margin-bottom: 8px; }
-  .history-action-badge { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 10px; }
-  .history-name { font-size: 13px; font-weight: 600; color: var(--text); }
-  .history-meta { font-size: 11px; color: #aaa; margin-top: 2px; }
-  .undo-btn { background: #fff3e0; border: none; border-radius: 10px; padding: 6px 11px; font-size: 11px; color: #e67e22; font-weight: 700; cursor: pointer; flex-shrink: 0; margin-left: 8px; font-family: inherit; }
-
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(10px);
-    color: #fff; padding: 12px 22px; border-radius: 30px;
-    font-size: 13px; font-weight: 600;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    z-index: 200; white-space: nowrap;
-    opacity: 0; transition: all 0.3s;
-    pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* Loading */
-  .loading { display: flex; align-items: center; justify-content: center; padding: 60px 20px; color: #aaa; gap: 10px; }
-  .spinner { width: 20px; height: 20px; border: 2px solid #ddd; border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Sync indicator */
-  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; display: inline-block; margin-right: 5px; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-  input[type=date] { color-scheme: light; }
-
-  /* Edit modal */
-  .edit-cat-chips { display: flex; gap: 6px; flex-wrap: wrap; }
-  .edit-cat-chip { padding: 8px 13px; border-radius: 20px; border: 2px solid var(--border); background: #fff; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
-  .qty-input {
-    width: 70px; padding: 8px 10px;
-    border-radius: 12px; border: 1.5px solid var(--border);
-    font-size: 22px; font-weight: 900; text-align: center;
-    outline: none; font-family: inherit; color: var(--text);
-  }
-  .qty-input:focus { border-color: var(--blue); }
-  .item-body-clickable { cursor: pointer; }
-  .item-body-clickable:active { opacity: 0.75; }
-  .edit-hint { font-size: 10px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 3px; }
+  .loading { display:flex; align-items:center; justify-content:center; padding:60px 20px; color:#aaa; gap:10px; }
+  .spinner { width:20px; height:20px; border:2px solid #ddd; border-top-color:var(--blue); border-radius:50%; animation:spin 0.8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  input[type=date] { color-scheme:light; }
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
   <div class="header-top">
     <div>
       <div class="header-label">Family Stock Manager</div>
       <div class="header-title">🏠 家族の保存食管理</div>
     </div>
-    <button class="header-btn" onclick="openHistory()">📋 履歴</button>
+    <button class="header-btn" id="btn-history">📋 履歴</button>
   </div>
-  <div class="stats" id="stats">
+  <div class="stats">
     <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-value" id="stat-total">—</div><div class="stat-label">総在庫数</div></div>
     <div class="stat-card"><div class="stat-icon">🔴</div><div class="stat-value" style="color:#ef5350" id="stat-urgent">—</div><div class="stat-label">要注意</div></div>
     <div class="stat-card"><div class="stat-icon">🟡</div><div class="stat-value" style="color:#ffb300" id="stat-soon">—</div><div class="stat-label">もうすぐ</div></div>
   </div>
 </div>
 
-<!-- Sticky nav -->
 <div class="sticky-nav">
   <div class="cat-tabs" id="cat-tabs"></div>
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input class="search-input" id="search-input" placeholder="商品名で検索..." oninput="renderList()">
+    <input class="search-input" id="search-input" placeholder="商品名で検索...">
   </div>
 </div>
 
-<!-- List -->
 <div class="list" id="item-list">
   <div class="loading"><div class="spinner"></div>データを読み込み中...</div>
 </div>
 
-<!-- FAB -->
-<button class="fab" onclick="openAdd()">＋</button>
-
-<!-- Toast -->
+<button class="fab" id="btn-add">＋</button>
 <div class="toast" id="toast"></div>
 
-<!-- Add Modal -->
-<div class="modal-overlay" id="add-modal" onclick="handleOverlayClick(event,'add-modal')">
+<!-- 追加モーダル -->
+<div class="modal-overlay" id="add-modal">
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title">📦 商品を追加</span>
-      <button class="modal-close" onclick="closeAdd()">閉じる</button>
+      <button class="modal-close" id="btn-close-add">閉じる</button>
     </div>
-
-    <button class="scan-btn" onclick="startScan()">
-      <span style="font-size:20px">📷</span> バーコードをスキャン
-    </button>
-    <div class="scan-area" id="scan-area" style="display:none">
-      <video id="scan-video" playsinline muted></video>
-      <div class="scan-frame"><div class="scan-frame-inner"></div></div>
-      <div class="scan-feedback" id="scan-feedback"></div>
-    </div>
-
-    <div class="divider">
-      <div class="divider-label">手動入力</div>
-    </div>
-
     <div class="form-group" style="position:relative">
       <label class="form-label">商品名</label>
-      <input class="form-input" id="new-name" placeholder="例: アルファ米（白米）" oninput="onNameInput()" autocomplete="off">
+      <input class="form-input" id="new-name" placeholder="例: アルファ米（白米）" autocomplete="off">
       <div id="suggestions" style="display:none;position:absolute;left:0;right:0;z-index:10"></div>
     </div>
-
     <div id="recents-section" class="recents">
       <div class="recents-label">📌 最近追加した商品</div>
       <div class="recent-chips" id="recent-chips"></div>
     </div>
-
     <div class="form-group">
       <label class="form-label">カテゴリ</label>
       <div class="cat-chips" id="new-cat-chips"></div>
     </div>
-
     <div class="form-group">
       <label class="form-label">数量</label>
       <div class="qty-row">
-        <button class="qty-btn" onclick="changeQty(-1)">−</button>
-        <input class="qty-input" type="number" id="new-qty" min="1" value="1" oninput="onNewQtyInput()">
-        <button class="qty-btn" onclick="changeQty(1)" style="background:var(--navy);color:#fff;border-color:var(--navy)">＋</button>
+        <button class="qty-btn" id="new-qty-minus">−</button>
+        <input class="qty-input" type="number" id="new-qty" min="1" value="1">
+        <button class="qty-btn" id="new-qty-plus" style="background:var(--navy);color:#fff;border-color:var(--navy)">＋</button>
       </div>
     </div>
-
     <div class="form-group">
       <label class="form-label">賞味期限</label>
       <input type="date" class="form-input" id="new-expiry">
-      <div class="quick-dates">
-        <button class="quick-date-btn" onclick="setExpiry(90)">3ヶ月</button>
-        <button class="quick-date-btn" onclick="setExpiry(180)">6ヶ月</button>
-        <button class="quick-date-btn" onclick="setExpiry(365)">1年</button>
-        <button class="quick-date-btn" onclick="setExpiry(365*3)">3年</button>
-        <button class="quick-date-btn" onclick="setExpiry(365*5)">5年</button>
-      </div>
+      <div class="quick-dates" id="new-quick-dates"></div>
     </div>
-
-    <button class="submit-btn" id="submit-btn" onclick="addItem()">✅ 追加する</button>
+    <button class="submit-btn" id="btn-submit-add">✅ 追加する</button>
   </div>
 </div>
 
-<!-- History Modal -->
-<div class="modal-overlay" id="history-modal" onclick="handleOverlayClick(event,'history-modal')">
-
-<!-- Edit Modal -->
-<div class="modal-overlay" id="edit-modal" onclick="handleOverlayClick(event,'edit-modal')">
+<!-- 編集モーダル -->
+<div class="modal-overlay" id="edit-modal">
   <div class="modal">
     <div class="modal-header">
       <span class="modal-title">✏️ 商品を編集</span>
-      <button class="modal-close" onclick="closeEdit()">閉じる</button>
+      <button class="modal-close" id="btn-close-edit">閉じる</button>
     </div>
     <div class="form-group">
       <label class="form-label">商品名</label>
@@ -402,29 +199,26 @@
     <div class="form-group">
       <label class="form-label">数量</label>
       <div class="qty-row">
-        <button class="qty-btn" onclick="changeEditQty(-1)">−</button>
-        <input class="qty-input" type="number" id="edit-qty" min="0" oninput="onEditQtyInput()">
-        <button class="qty-btn" onclick="changeEditQty(1)" style="background:var(--navy);color:#fff;border-color:var(--navy)">＋</button>
+        <button class="qty-btn" id="edit-qty-minus">−</button>
+        <input class="qty-input" type="number" id="edit-qty" min="0">
+        <button class="qty-btn" id="edit-qty-plus" style="background:var(--navy);color:#fff;border-color:var(--navy)">＋</button>
       </div>
     </div>
     <div class="form-group">
       <label class="form-label">賞味期限</label>
       <input type="date" class="form-input" id="edit-expiry">
-      <div class="quick-dates">
-        <button class="quick-date-btn" onclick="setEditExpiry(90)">3ヶ月</button>
-        <button class="quick-date-btn" onclick="setEditExpiry(180)">6ヶ月</button>
-        <button class="quick-date-btn" onclick="setEditExpiry(365)">1年</button>
-        <button class="quick-date-btn" onclick="setEditExpiry(365*3)">3年</button>
-        <button class="quick-date-btn" onclick="setEditExpiry(365*5)">5年</button>
-      </div>
+      <div class="quick-dates" id="edit-quick-dates"></div>
     </div>
-    <button class="submit-btn" onclick="saveEdit()">💾 保存する</button>
+    <button class="submit-btn" id="btn-submit-edit">💾 保存する</button>
   </div>
 </div>
+
+<!-- 履歴モーダル -->
+<div class="modal-overlay" id="history-modal">
   <div class="modal" style="max-height:85vh;display:flex;flex-direction:column;padding:0">
-    <div style="padding:20px 20px 12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center">
+    <div style="padding:20px 20px 12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
       <span class="modal-title">📋 操作履歴</span>
-      <button class="modal-close" onclick="closeHistory()">閉じる</button>
+      <button class="modal-close" id="btn-close-history">閉じる</button>
     </div>
     <div style="overflow-y:auto;flex:1">
       <div class="history-list" id="history-list"></div>
@@ -432,158 +226,82 @@
   </div>
 </div>
 
-<!-- ZXing barcode reader -->
-<script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
+const db = getFirestore(initializeApp({
   apiKey: "AIzaSyBLLc6qMk_hfUK5vuX_fkbXRsO4v0HSQtw",
   authDomain: "stock-master-c65ff.firebaseapp.com",
   projectId: "stock-master-c65ff",
   storageBucket: "stock-master-c65ff.firebasestorage.app",
   messagingSenderId: "637658921529",
   appId: "1:637658921529:web:933091a5775adc0b0eebe8"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+}));
 
 const CATEGORIES = ["主食","おかず","水","お菓子","その他"];
-const CAT_ICONS = {"主食":"🍚","おかず":"🍱","水":"💧","お菓子":"🍬","その他":"📦"};
+const CAT_ICONS  = {"主食":"🍚","おかず":"🍱","水":"💧","お菓子":"🍬","その他":"📦"};
 const CAT_COLORS = {"主食":"#e8a838","おかず":"#5bb85d","水":"#3b9bd4","お菓子":"#d45caa","その他":"#8b7dd4"};
+const QUICK_DAYS = [[90,"3ヶ月"],[180,"6ヶ月"],[365,"1年"],[365*3,"3年"],[365*5,"5年"]];
 
-let items = [];
-let historyList = [];
-let filterCat = "すべて";
-let newQty = 1;
-let newCat = "主食";
+let items = [], historyList = [], filterCat = "すべて";
+let newCat = "主食", editCat = "主食", editId = null;
 let recentNames = JSON.parse(localStorage.getItem("recentNames")||"[]");
 if(!recentNames.length) recentNames = ["アルファ米（白米）","カップ麺","缶詰（さば味噌）","ミネラルウォーター 2L","ビスケット","乾パン","レトルトカレー","フリーズドライ味噌汁"];
-let scanStream = null;
 
-// Firestore listeners
-onSnapshot(query(collection(db,"items"), orderBy("createdAt","asc")), snap => {
-  items = snap.docs.map(d => ({id: d.id, ...d.data()}));
-  renderList();
-  renderStats();
+// ── ユーティリティ ──
+const getDateStr = days => { const d=new Date(); d.setDate(d.getDate()+days); return d.toISOString().split("T")[0]; };
+const getDays = expiry => { const t=new Date(); t.setHours(0,0,0,0); return Math.ceil((new Date(expiry)-t)/(864e5)); };
+const getStatus = days => {
+  if(days<=7)  return {bg:"#ff3b3b",light:"#ffe5e5",text:"#fff",label:days<=0?"期限切れ":"あと"+days+"日",icon:"🔴"};
+  if(days<=30) return {bg:"#ffb800",light:"#fff8e0",text:"#333",label:"あと"+days+"日",icon:"🟡"};
+  return              {bg:"#22c55e",light:"#e6faf0",text:"#fff",label:"あと"+days+"日",icon:"🟢"};
+};
+const showToast = (msg, type="success") => {
+  const el=document.getElementById("toast");
+  el.textContent=msg; el.style.background=type==="error"?"#ff3b3b":type==="info"?"#555":"#22c55e";
+  el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),2500);
+};
+const openModal  = id => document.getElementById(id).classList.add("open");
+const closeModal = id => document.getElementById(id).classList.remove("open");
+
+// ── Firestore ──
+onSnapshot(query(collection(db,"items"),orderBy("createdAt","asc")), snap => {
+  items = snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderList(); renderStats();
 });
-onSnapshot(query(collection(db,"history"), orderBy("createdAt","desc")), snap => {
-  historyList = snap.docs.map(d => ({id: d.id, ...d.data()}));
+onSnapshot(query(collection(db,"history"),orderBy("createdAt","desc")), snap => {
+  historyList = snap.docs.map(d=>({id:d.id,...d.data()}));
   renderHistory();
 });
 
-// Init UI
-function initUI() {
-  // Cat tabs
-  const tabs = document.getElementById("cat-tabs");
-  tabs.innerHTML = ["すべて",...CATEGORIES].map(c =>
-    `<button class="cat-btn${c===filterCat?' active':''}" onclick="setCat('${c}')">${c!=="すべて"?CAT_ICONS[c]+' ':''}${c}</button>`
-  ).join('');
-
-  // New item cat chips
-  const chips = document.getElementById("new-cat-chips");
-  chips.innerHTML = CATEGORIES.map(c =>
-    `<button class="cat-chip" id="chip-${c}" onclick="selectCat('${c}')" style="${newCat===c?`border-color:${CAT_COLORS[c]};background:${CAT_COLORS[c]}22;color:${CAT_COLORS[c]};font-weight:700`:''}">${CAT_ICONS[c]} ${c}</button>`
-  ).join('');
-
-  // Recents
-  renderRecents();
-
-  // Default expiry
-  document.getElementById("new-expiry").value = getDateStr(365);
-}
-
-function renderRecents() {
-  document.getElementById("recent-chips").innerHTML = recentNames.slice(0,8).map(n =>
-    `<button class="recent-chip" onclick="pickRecent('${n}')">${n}</button>`
-  ).join('');
-}
-
-window.pickRecent = (n) => {
-  document.getElementById("new-name").value = n;
-  document.getElementById("recents-section").style.display = "none";
-  document.getElementById("suggestions").style.display = "none";
+// ── レンダリング ──
+const renderStats = () => {
+  document.getElementById("stat-total").textContent  = items.reduce((s,i)=>s+i.quantity,0);
+  document.getElementById("stat-urgent").textContent = items.filter(i=>getDays(i.expiry)<=7&&i.quantity>0).length;
+  document.getElementById("stat-soon").textContent   = items.filter(i=>{const d=getDays(i.expiry);return d>7&&d<=30&&i.quantity>0;}).length;
 };
 
-window.setCat = (cat) => {
-  filterCat = cat;
-  document.querySelectorAll(".cat-btn").forEach(b => b.classList.toggle("active", b.textContent.replace(/[🍚🍱💧🍬📦 ]/g,"")===cat || (cat==="すべて"&&b.textContent==="すべて")));
-  renderList();
+const renderCatTabs = () => {
+  document.getElementById("cat-tabs").innerHTML =
+    ["すべて",...CATEGORIES].map(c =>
+      `<button class="cat-btn${c===filterCat?" active":""}" data-cat="${c}">${c!=="すべて"?CAT_ICONS[c]+" ":""}${c}</button>`
+    ).join("");
 };
 
-window.selectCat = (cat) => {
-  newCat = cat;
-  document.querySelectorAll(".cat-chip").forEach(b => {
-    const c = b.id.replace("chip-","");
-    b.style.cssText = newCat===c ? `border-color:${CAT_COLORS[c]};background:${CAT_COLORS[c]}22;color:${CAT_COLORS[c]};font-weight:700` : "";
-  });
-};
-
-window.changeQty = (d) => {
-  const el = document.getElementById("new-qty");
-  newQty = Math.max(1, (parseInt(el.value)||1) + d);
-  el.value = newQty;
-};
-
-window.onNewQtyInput = () => {
-  const v = parseInt(document.getElementById("new-qty").value);
-  newQty = isNaN(v) || v < 1 ? 1 : v;
-};
-
-window.setExpiry = (days) => {
-  document.getElementById("new-expiry").value = getDateStr(days);
-};
-
-function getDateStr(days) {
-  const d = new Date();
-  d.setDate(d.getDate()+days);
-  return d.toISOString().split("T")[0];
-}
-
-function getDays(expiry) {
-  const today = new Date(); today.setHours(0,0,0,0);
-  return Math.ceil((new Date(expiry)-today)/(1000*60*60*24));
-}
-
-function getStatus(days) {
-  if(days<=7)  return {bg:"#ff3b3b",light:"#ffe5e5",text:"#fff",label: days<=0?"期限切れ":"あと"+days+"日",icon:"🔴"};
-  if(days<=30) return {bg:"#ffb800",light:"#fff8e0",text:"#333",label:"あと"+days+"日",icon:"🟡"};
-  return       {bg:"#22c55e",light:"#e6faf0",text:"#fff",label:"あと"+days+"日",icon:"🟢"};
-}
-
-function renderStats() {
-  const total = items.reduce((s,i)=>s+i.quantity,0);
-  const urgent = items.filter(i=>getDays(i.expiry)<=7&&i.quantity>0).length;
-  const soon = items.filter(i=>{const d=getDays(i.expiry);return d>7&&d<=30&&i.quantity>0;}).length;
-  document.getElementById("stat-total").textContent = total;
-  document.getElementById("stat-urgent").textContent = urgent;
-  document.getElementById("stat-soon").textContent = soon;
-}
-
-function renderList() {
+const renderList = () => {
   const q = document.getElementById("search-input").value;
   const filtered = items
-    .filter(i => filterCat==="すべて" || i.category===filterCat)
-    .filter(i => i.name.includes(q))
-    .sort((a,b) => getDays(a.expiry)-getDays(b.expiry));
-
+    .filter(i=>filterCat==="すべて"||i.category===filterCat)
+    .filter(i=>i.name.includes(q))
+    .sort((a,b)=>getDays(a.expiry)-getDays(b.expiry));
   const el = document.getElementById("item-list");
-  if(!filtered.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">在庫がありません</div></div>`;
-    return;
-  }
+  if(!filtered.length){ el.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><div style="font-size:14px">在庫がありません</div></div>`; return; }
   el.innerHTML = filtered.map(item => {
-    const days = getDays(item.expiry);
-    const st = getStatus(days);
-    const cc = CAT_COLORS[item.category];
-    const empty = item.quantity===0;
-    return `
-    <div class="item-card" style="border:1px solid ${st.light}">
+    const days=getDays(item.expiry), st=getStatus(days), cc=CAT_COLORS[item.category], empty=item.quantity===0;
+    return `<div class="item-card" style="border:1px solid ${st.light}">
       <div class="status-bar" style="background:${st.bg}"></div>
-      <div class="item-body item-body-clickable" onclick="openEdit('${item.id}')">
+      <div class="item-body" data-id="${item.id}">
         <div class="item-badges">
           <span class="badge" style="background:${cc}20;color:${cc}">${CAT_ICONS[item.category]} ${item.category}</span>
           <span class="badge" style="background:${st.bg};color:${st.text}">${st.icon} ${st.label}</span>
@@ -593,309 +311,205 @@ function renderList() {
         <div class="edit-hint">✏️ タップして編集</div>
       </div>
       <div class="item-right">
-        <button class="consume-btn" onclick="consume('${item.id}')"
-          style="background:${empty?'#e0e0e0':`linear-gradient(135deg,${st.bg},${st.bg}cc)`};color:${empty?'#aaa':st.text};cursor:${empty?'not-allowed':'pointer'};box-shadow:${empty?'none':`0 4px 12px ${st.bg}55`}"
-          ${empty?'disabled':''}>
-          <span class="minus">−1</span><span class="label">消費</span>
+        <button class="consume-btn" data-consume="${item.id}"
+          style="background:${empty?"#e0e0e0":`linear-gradient(135deg,${st.bg},${st.bg}cc)`};color:${empty?"#aaa":st.text};cursor:${empty?"not-allowed":"pointer"};box-shadow:${empty?"none":`0 4px 12px ${st.bg}55`}"
+          ${empty?"disabled":""}>
+          <span style="font-size:20px">−1</span><span style="font-size:9px;opacity:0.85">消費</span>
         </button>
-        <div class="qty-display">
-          <div class="qty-num" style="color:${empty?'#ccc':'var(--text)'}">${item.quantity}</div>
+        <div style="text-align:center">
+          <div class="qty-num" style="color:${empty?"#ccc":"var(--text)"}">${item.quantity}</div>
           <div class="qty-unit">個</div>
         </div>
       </div>
-      <button class="delete-btn" onclick="deleteItem('${item.id}')">✕</button>
+      <button class="delete-btn" data-delete="${item.id}">✕</button>
     </div>`;
-  }).join('');
-}
+  }).join("");
+};
 
-function renderHistory() {
-  const el = document.getElementById("history-list");
-  if(!historyList.length) {
-    el.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">履歴はまだありません</div></div>`;
-    return;
-  }
-  const actionColor = {消費:"#2d6a9f",追加:"#22c55e",削除:"#ff5252"};
+const renderHistory = () => {
+  const el=document.getElementById("history-list");
+  if(!historyList.length){ el.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><div style="font-size:14px">履歴はまだありません</div></div>`; return; }
+  const ac={消費:"#2d6a9f",追加:"#22c55e",削除:"#ff5252",編集:"#8b7dd4"};
   el.innerHTML = historyList.map(h => {
-    const ac = actionColor[h.action]||"#888";
-    const canUndo = h.action==="消費"||h.action==="追加";
-    return `
-    <div class="history-item" style="border-left:4px solid ${ac}">
+    const c=ac[h.action]||"#888", canUndo=h.action==="消費"||h.action==="追加";
+    return `<div class="history-item" style="border-left:4px solid ${c}">
       <div style="flex:1">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-          <span class="history-action-badge" style="color:${ac};background:${ac}20">${h.action}</span>
+          <span class="history-action-badge" style="color:${c};background:${c}20">${h.action}</span>
           <span class="history-name">${h.itemName}</span>
         </div>
         <div class="history-meta">${h.detail} · ${h.time||""}</div>
       </div>
-      ${canUndo?`<button class="undo-btn" onclick="undoEntry('${h.id}','${h.action}','${h.itemName}','${h.detail}')">↩ 元に戻す</button>`:''}
+      ${canUndo?`<button class="undo-btn" data-undo="${h.id}" data-action="${h.action}" data-item="${h.itemName}" data-detail="${h.detail}">↩ 元に戻す</button>`:""}
     </div>`;
-  }).join('');
-}
+  }).join("");
+};
 
-// Actions
-window.consume = async (id) => {
-  const item = items.find(i=>i.id===id);
-  if(!item||item.quantity<=0) return;
-  const newQtyVal = item.quantity-1;
-  await updateDoc(doc(db,"items",id),{quantity: newQtyVal});
-  await addDoc(collection(db,"history"),{
-    action:"消費", itemName:item.name,
-    detail:`${item.quantity} → ${newQtyVal}`,
-    time: new Date().toLocaleString("ja-JP"),
-    itemId: id, prevQty: item.quantity,
-    createdAt: serverTimestamp()
-  });
+const renderCatChips = (id, selected) => {
+  document.getElementById(id).innerHTML = CATEGORIES.map(c => {
+    const active = c===selected;
+    return `<button class="${id==="new-cat-chips"?"cat-chip":"edit-cat-chip"}" data-chip="${id}" data-cat="${c}"
+      style="${active?`border-color:${CAT_COLORS[c]};background:${CAT_COLORS[c]}22;color:${CAT_COLORS[c]};font-weight:700`:""}"
+    >${CAT_ICONS[c]} ${c}</button>`;
+  }).join("");
+};
+
+const renderRecents = () => {
+  document.getElementById("recent-chips").innerHTML =
+    recentNames.slice(0,8).map(n=>`<button class="recent-chip" data-recent="${n}">${n}</button>`).join("");
+};
+
+const renderQuickDates = id => {
+  document.getElementById(id).innerHTML =
+    QUICK_DAYS.map(([d,l])=>`<button class="quick-date-btn" data-days="${d}" data-qid="${id}">${l}</button>`).join("");
+};
+
+// ── アクション ──
+const consume = async id => {
+  const item=items.find(i=>i.id===id); if(!item||item.quantity<=0) return;
+  const nq=item.quantity-1;
+  await updateDoc(doc(db,"items",id),{quantity:nq});
+  await addDoc(collection(db,"history"),{action:"消費",itemName:item.name,detail:`${item.quantity} → ${nq}`,time:new Date().toLocaleString("ja-JP"),itemId:id,prevQty:item.quantity,createdAt:serverTimestamp()});
   showToast(`${item.name} を1個消費しました`);
 };
 
-window.deleteItem = async (id) => {
-  const item = items.find(i=>i.id===id);
+const deleteItem = async id => {
+  const item=items.find(i=>i.id===id);
   await deleteDoc(doc(db,"items",id));
-  if(item) await addDoc(collection(db,"history"),{
-    action:"削除", itemName:item.name, detail:"削除済み",
-    time: new Date().toLocaleString("ja-JP"),
-    createdAt: serverTimestamp()
-  });
+  if(item) await addDoc(collection(db,"history"),{action:"削除",itemName:item.name,detail:"削除済み",time:new Date().toLocaleString("ja-JP"),createdAt:serverTimestamp()});
   showToast("削除しました","info");
 };
 
-window.addItem = async () => {
-  const name = document.getElementById("new-name").value.trim();
-  const expiry = document.getElementById("new-expiry").value;
-  const qtyVal = parseInt(document.getElementById("new-qty").value) || 1;
-  if(!name||!expiry) return;
-  await addDoc(collection(db,"items"),{
-    name, category: newCat, quantity: qtyVal, expiry,
-    createdAt: serverTimestamp()
-  });
-  await addDoc(collection(db,"history"),{
-    action:"追加", itemName:name,
-    detail:`${newCat} × ${newQty}`,
-    time: new Date().toLocaleString("ja-JP"),
-    createdAt: serverTimestamp()
-  });
-  if(!recentNames.includes(name)) {
-    recentNames = [name,...recentNames.slice(0,19)];
-    localStorage.setItem("recentNames", JSON.stringify(recentNames));
-  }
+const addItem = async () => {
+  const name=document.getElementById("new-name").value.trim();
+  const expiry=document.getElementById("new-expiry").value;
+  const qty=parseInt(document.getElementById("new-qty").value)||1;
+  if(!name||!expiry){ showToast("商品名と賞味期限を入力してください","error"); return; }
+  await addDoc(collection(db,"items"),{name,category:newCat,quantity:qty,expiry,createdAt:serverTimestamp()});
+  await addDoc(collection(db,"history"),{action:"追加",itemName:name,detail:`${newCat} × ${qty}`,time:new Date().toLocaleString("ja-JP"),createdAt:serverTimestamp()});
+  if(!recentNames.includes(name)){ recentNames=[name,...recentNames.slice(0,19)]; localStorage.setItem("recentNames",JSON.stringify(recentNames)); }
   showToast(`${name} を追加しました`);
-  closeAdd();
+  closeModal("add-modal");
 };
 
-window.undoEntry = async (hid, action, itemName, detail) => {
-  if(action==="消費") {
-    const item = items.find(i=>i.name===itemName);
-    if(item) {
-      const [,after] = detail.split(" → ");
-      await updateDoc(doc(db,"items",item.id),{quantity: parseInt(after)+1});
-    }
-  } else if(action==="追加") {
-    const item = items.find(i=>i.name===itemName);
-    if(item) await deleteDoc(doc(db,"items",item.id));
-  }
+const saveEdit = async () => {
+  if(!editId) return;
+  const name=document.getElementById("edit-name").value.trim();
+  const expiry=document.getElementById("edit-expiry").value;
+  const qty=parseInt(document.getElementById("edit-qty").value);
+  if(!name||!expiry){ showToast("商品名と賞味期限を入力してください","error"); return; }
+  const prev=items.find(i=>i.id===editId);
+  await updateDoc(doc(db,"items",editId),{name,category:editCat,quantity:qty,expiry});
+  await addDoc(collection(db,"history"),{action:"編集",itemName:name,detail:`数量:${prev?.quantity}→${qty} 期限:${prev?.expiry}→${expiry}`,time:new Date().toLocaleString("ja-JP"),createdAt:serverTimestamp()});
+  showToast(`${name} を更新しました`);
+  closeModal("edit-modal");
+};
+
+const undoEntry = async (hid,action,itemName,detail) => {
+  if(action==="消費"){ const item=items.find(i=>i.name===itemName); if(item){ const [,a]=detail.split(" → "); await updateDoc(doc(db,"items",item.id),{quantity:parseInt(a)+1}); } }
+  else if(action==="追加"){ const item=items.find(i=>i.name===itemName); if(item) await deleteDoc(doc(db,"items",item.id)); }
   await deleteDoc(doc(db,"history",hid));
   showToast("操作を元に戻しました");
 };
 
-// Barcode scan (real - using ZXing-js/browser)
-let codeReader = null;
-let scanActive = false;
-
-window.startScan = async () => {
-  document.getElementById("scan-area").style.display = "block";
-  document.getElementById("scan-feedback").textContent = "カメラ起動中...";
-  scanActive = true;
-
-  try {
-    if(!window.ZXing) throw new Error("ZXing not loaded");
-    codeReader = new window.ZXing.BrowserMultiFormatReader();
-    document.getElementById("scan-feedback").textContent = "📦 バーコードをカメラに向けてください";
-
-    const videoEl = document.getElementById("scan-video");
-    const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
-    scanStream = stream;
-    videoEl.srcObject = stream;
-    await videoEl.play();
-
-    // Poll frames
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    async function tick() {
-      if(!scanActive) return;
-      if(videoEl.readyState === videoEl.HAVE_ENOUGH_DATA) {
-        canvas.width = videoEl.videoWidth;
-        canvas.height = videoEl.videoHeight;
-        ctx.drawImage(videoEl, 0, 0);
-        try {
-          const result = await codeReader.decodeFromCanvas(canvas);
-          if(result && result.getText()) {
-            scanActive = false;
-            stopScan();
-            onBarcodeDetected(result.getText());
-            return;
-          }
-        } catch(e) {}
-      }
-      if(scanActive) setTimeout(tick, 200);
-    }
-    tick();
-
-  } catch(e) {
-    document.getElementById("scan-feedback").textContent = "⚠️ カメラへのアクセスを許可してください";
-    scanActive = false;
-  }
-};
-
-async function onBarcodeDetected(code) {
-  document.getElementById("scan-area").style.display = "block";
-  document.getElementById("scan-feedback").textContent = `🔍 JANコード: ${code} — 商品情報を検索中...`;
-
-  try {
-    const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
-    const data = await res.json();
-    if(data.status === 1 && data.product) {
-      const p = data.product;
-      const name = p.product_name_ja || p.product_name || p.abbreviated_product_name || "";
-      if(name) {
-        document.getElementById("new-name").value = name;
-        document.getElementById("recents-section").style.display = "none";
-        // カテゴリ推定
-        const cats = (p.categories||"").toLowerCase();
-        let guessedCat = "その他";
-        if(cats.includes("water")||cats.includes("飲料")||cats.includes("水")) guessedCat="水";
-        else if(cats.includes("rice")||cats.includes("pasta")||cats.includes("noodle")||cats.includes("bread")||cats.includes("穀物")||cats.includes("米")||cats.includes("麺")||cats.includes("パン")) guessedCat="主食";
-        else if(cats.includes("snack")||cats.includes("biscuit")||cats.includes("cookie")||cats.includes("菓子")||cats.includes("スナック")||cats.includes("チョコ")) guessedCat="お菓子";
-        else if(cats.includes("fish")||cats.includes("meat")||cats.includes("vegetable")||cats.includes("缶詰")||cats.includes("レトルト")||cats.includes("惣菜")) guessedCat="おかず";
-        selectCat(guessedCat);
-        document.getElementById("scan-feedback").textContent = `✅ 取得成功: ${name}`;
-        return;
-      }
-    }
-  } catch(e) {}
-
-  // 商品名が見つからなかった場合
-  document.getElementById("scan-feedback").textContent = `📋 JANコード: ${code}（商品名が見つかりませんでした。手入力してください）`;
-  document.getElementById("recents-section").style.display = "none";
-}
-
-function stopScan() {
-  scanActive = false;
-  if(codeReader) { try { codeReader.reset(); } catch(e){} codeReader = null; }
-  if(scanStream) { scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; }
-}
-
-// Suggestions
-window.onNameInput = () => {
-  const val = document.getElementById("new-name").value;
-  const recEl = document.getElementById("recents-section");
-  recEl.style.display = val ? "none" : "block";
-  if(!val) { document.getElementById("suggestions").style.display="none"; return; }
-  const matches = recentNames.filter(n=>n.includes(val)&&n!==val).slice(0,5);
-  const el = document.getElementById("suggestions");
-  if(!matches.length) { el.style.display="none"; return; }
-  el.style.display="block";
-  el.innerHTML = `<div class="suggestions">${matches.map(n=>`<div class="suggestion-item" onclick="pickRecent('${n}')">🕐 ${n}</div>`).join('')}</div>`;
-};
-
-// Modal controls
-window.openAdd = () => {
-  newQty=1; newCat="主食";
+// ── モーダル開閉 ──
+const openAdd = () => {
+  newCat="主食";
   document.getElementById("new-name").value="";
   document.getElementById("new-qty").value="1";
   document.getElementById("new-expiry").value=getDateStr(365);
-  document.getElementById("scan-area").style.display="none";
   document.getElementById("suggestions").style.display="none";
   document.getElementById("recents-section").style.display="block";
+  renderCatChips("new-cat-chips",newCat);
   renderRecents();
-  initUI();
-  document.getElementById("add-modal").classList.add("open");
-};
-window.closeAdd = () => {
-  stopScan();
-  document.getElementById("add-modal").classList.remove("open");
-};
-window.openHistory = () => {
-  renderHistory();
-  document.getElementById("history-modal").classList.add("open");
-};
-window.closeHistory = () => document.getElementById("history-modal").classList.remove("open");
-window.handleOverlayClick = (e,id) => { if(e.target===e.currentTarget) { if(id==="add-modal") closeAdd(); else if(id==="edit-modal") closeEdit(); else closeHistory(); } };
-
-// Toast
-function showToast(msg, type="success") {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.style.background = type==="error"?"#ff3b3b":type==="info"?"#555":"#22c55e";
-  el.classList.add("show");
-  setTimeout(()=>el.classList.remove("show"), 2500);
-}
-window.showToast = showToast;
-
-// Edit modal
-let editId = null;
-let editCat = "主食";
-let editQty = 1;
-
-window.openEdit = (id) => {
-  const item = items.find(i=>i.id===id);
-  if(!item) return;
-  editId = id; editCat = item.category; editQty = item.quantity;
-  document.getElementById("edit-name").value = item.name;
-  document.getElementById("edit-qty").value = item.quantity;
-  document.getElementById("edit-expiry").value = item.expiry;
-  const chips = document.getElementById("edit-cat-chips");
-  chips.innerHTML = CATEGORIES.map(c =>
-    `<button class="edit-cat-chip" id="echip-${c}" onclick="selectEditCat('${c}')" style="${editCat===c?`border-color:${CAT_COLORS[c]};background:${CAT_COLORS[c]}22;color:${CAT_COLORS[c]};font-weight:700`:''}">${CAT_ICONS[c]} ${c}</button>`
-  ).join('');
-  document.getElementById("edit-modal").classList.add("open");
+  renderQuickDates("new-quick-dates");
+  openModal("add-modal");
 };
 
-window.closeEdit = () => document.getElementById("edit-modal").classList.remove("open");
-
-window.selectEditCat = (cat) => {
-  editCat = cat;
-  document.querySelectorAll(".edit-cat-chip").forEach(b => {
-    const c = b.id.replace("echip-","");
-    b.style.cssText = editCat===c ? `border-color:${CAT_COLORS[c]};background:${CAT_COLORS[c]}22;color:${CAT_COLORS[c]};font-weight:700` : "";
-  });
+const openEdit = id => {
+  const item=items.find(i=>i.id===id); if(!item) return;
+  editId=id; editCat=item.category;
+  document.getElementById("edit-name").value=item.name;
+  document.getElementById("edit-qty").value=item.quantity;
+  document.getElementById("edit-expiry").value=item.expiry;
+  renderCatChips("edit-cat-chips",editCat);
+  renderQuickDates("edit-quick-dates");
+  openModal("edit-modal");
 };
 
-window.changeEditQty = (d) => {
-  const el = document.getElementById("edit-qty");
-  editQty = Math.max(0, (parseInt(el.value)||0) + d);
-  el.value = editQty;
-};
+// ── イベント委譲（すべてここで一元管理）──
+document.addEventListener("click", e => {
+  const t = e.target;
 
-window.onEditQtyInput = () => {
-  const v = parseInt(document.getElementById("edit-qty").value);
-  editQty = isNaN(v) || v < 0 ? 0 : v;
-};
+  // カテゴリタブ
+  const catBtn = t.closest(".cat-btn[data-cat]");
+  if(catBtn && !catBtn.closest(".modal-overlay")){ filterCat=catBtn.dataset.cat; renderCatTabs(); renderList(); return; }
 
-window.setEditExpiry = (days) => {
-  document.getElementById("edit-expiry").value = getDateStr(days);
-};
+  // 商品本体タップ → 編集
+  const itemBody = t.closest(".item-body[data-id]");
+  if(itemBody){ openEdit(itemBody.dataset.id); return; }
 
-window.saveEdit = async () => {
-  if(!editId) return;
-  const name = document.getElementById("edit-name").value.trim();
-  const expiry = document.getElementById("edit-expiry").value;
-  const qty = parseInt(document.getElementById("edit-qty").value);
-  if(!name||!expiry) return;
-  const item = items.find(i=>i.id===editId);
-  await updateDoc(doc(db,"items",editId),{name, category: editCat, quantity: qty, expiry});
-  await addDoc(collection(db,"history"),{
-    action:"編集", itemName:name,
-    detail:`数量:${item?.quantity}→${qty} 期限:${item?.expiry}→${expiry}`,
-    time: new Date().toLocaleString("ja-JP"),
-    createdAt: serverTimestamp()
-  });
-  showToast(`${name} を更新しました`);
-  closeEdit();
-};
+  // 消費ボタン（item-bodyの外にあるので先にチェック）
+  const consumeBtn = t.closest("[data-consume]");
+  if(consumeBtn){ consume(consumeBtn.dataset.consume); return; }
 
-// Init
-initUI();
+  // 削除ボタン
+  const deleteBtn = t.closest("[data-delete]");
+  if(deleteBtn){ deleteItem(deleteBtn.dataset.delete); return; }
+
+  // 追加モーダル カテゴリチップ
+  if(t.classList.contains("cat-chip")){ newCat=t.dataset.cat; renderCatChips("new-cat-chips",newCat); return; }
+
+  // 編集モーダル カテゴリチップ
+  if(t.classList.contains("edit-cat-chip")){ editCat=t.dataset.cat; renderCatChips("edit-cat-chips",editCat); return; }
+
+  // 最近追加した商品・サジェスト
+  const recent = t.closest("[data-recent]");
+  if(recent){ document.getElementById("new-name").value=recent.dataset.recent; document.getElementById("recents-section").style.display="none"; document.getElementById("suggestions").style.display="none"; return; }
+
+  // クイック日付
+  const qd = t.closest(".quick-date-btn[data-days]");
+  if(qd){ const target=qd.dataset.qid==="new-quick-dates"?"new-expiry":"edit-expiry"; document.getElementById(target).value=getDateStr(parseInt(qd.dataset.days)); return; }
+
+  // 数量±
+  if(t.id==="new-qty-minus"){ const el=document.getElementById("new-qty"); el.value=Math.max(1,(parseInt(el.value)||1)-1); return; }
+  if(t.id==="new-qty-plus") { const el=document.getElementById("new-qty"); el.value=(parseInt(el.value)||1)+1; return; }
+  if(t.id==="edit-qty-minus"){ const el=document.getElementById("edit-qty"); el.value=Math.max(0,(parseInt(el.value)||0)-1); return; }
+  if(t.id==="edit-qty-plus") { const el=document.getElementById("edit-qty"); el.value=(parseInt(el.value)||0)+1; return; }
+
+  // 各ボタン
+  if(t.id==="btn-add")          { openAdd(); return; }
+  if(t.id==="btn-close-add")    { closeModal("add-modal"); return; }
+  if(t.id==="btn-submit-add")   { addItem(); return; }
+  if(t.id==="btn-close-edit")   { closeModal("edit-modal"); return; }
+  if(t.id==="btn-submit-edit")  { saveEdit(); return; }
+  if(t.id==="btn-history")      { renderHistory(); openModal("history-modal"); return; }
+  if(t.id==="btn-close-history"){ closeModal("history-modal"); return; }
+
+  // 元に戻す
+  const undoBtn = t.closest(".undo-btn[data-undo]");
+  if(undoBtn){ undoEntry(undoBtn.dataset.undo,undoBtn.dataset.action,undoBtn.dataset.item,undoBtn.dataset.detail); return; }
+
+  // オーバーレイ背景タップで閉じる
+  if(t.classList.contains("modal-overlay")){ document.querySelectorAll(".modal-overlay.open").forEach(m=>m.classList.remove("open")); }
+});
+
+// サジェスト
+document.getElementById("new-name").addEventListener("input", () => {
+  const val=document.getElementById("new-name").value;
+  document.getElementById("recents-section").style.display=val?"none":"block";
+  const matches=recentNames.filter(n=>n.includes(val)&&n!==val).slice(0,5);
+  const el=document.getElementById("suggestions");
+  if(!val||!matches.length){ el.style.display="none"; return; }
+  el.style.display="block";
+  el.innerHTML=`<div class="suggestions-box">${matches.map(n=>`<div class="suggestion-item" data-recent="${n}">🕐 ${n}</div>`).join("")}</div>`;
+});
+
+// 検索
+document.getElementById("search-input").addEventListener("input", renderList);
+
+// 初期化
+renderCatTabs();
 </script>
 </body>
 </html>
